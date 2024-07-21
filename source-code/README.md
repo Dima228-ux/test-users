@@ -65,3 +65,5 @@
 6. Переходим по URL:
    
    http://test-users/source-code/backend/web/site/login
+
+7. пароль и логин от входа в админку: admin  
