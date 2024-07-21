@@ -12,7 +12,7 @@ class m240720_183232_fill_db_users extends Migration
      */
     public function safeUp()
     {
-        $this->execute(file_get_contents(__DIR__ .'/dump/test_users.sql'));
+        $this->execute(file_get_contents(__DIR__ . '/dump/test_users.sql'));
     }
 
     /**

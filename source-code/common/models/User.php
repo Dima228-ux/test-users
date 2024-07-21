@@ -3,7 +3,10 @@
 namespace common\models;
 
 
+use Yii;
+use yii\base\Exception;
 use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
 
 /**
  *
@@ -18,7 +21,7 @@ use yii\db\ActiveRecord;
  * @property string $authKey
  * @property string $accessToken [varchar(50)]
  */
-class User extends ActiveRecord implements \yii\web\IdentityInterface
+class User extends ActiveRecord implements IdentityInterface
 {
     public const TYPE_ENGINEER = 1;
     public const  TYPE_ADMIN = 2;
@@ -27,7 +30,6 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
     {
         return 'users';
     }
-
 
 
     /**
@@ -48,12 +50,11 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
 
     /**
      * @param $username
-     * @return array|\yii\db\ActiveRecord|null
+     * @return array|ActiveRecord|null
      */
     public static function findByUsername($username)
     {
         return self::find()->where(['username' => $username])->one();
-
     }
 
     public static function getUserId($userName)
@@ -77,7 +78,8 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
         ];
     }
 
-    public static function  getTypeUser(int $type){
+    public static function getTypeUser(int $type)
+    {
         $list = [
             self::TYPE_ENGINEER => 'Engineer',
             self::TYPE_ADMIN => 'Admin',
@@ -87,25 +89,38 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
     }
 
     /**
+     * @param $type
+     * @return int
+     */
+    public  function getNumberType($type ){
+
+        if(strpos('admin',$type) !== false){
+            return self::TYPE_ADMIN;
+        }else if(strpos('engineer',$type) !== false){
+            return self::TYPE_ENGINEER;
+        }
+    }
+
+    /**
      * @param $userName
      * @param $password
      * @param $email
      * @return User|false
-     * @throws \yii\base\Exception
+     * @throws Exception
      */
     public static function registedNewUser($userName, $password, $email)
     {
         $accessToken = mb_substr(str_shuffle(MD5(time() . microtime())), 0, 16, 'UTF-8');
-        $password = \Yii::$app->security->generatePasswordHash($password);
-        $authKey = \Yii::$app->security->generateRandomString(5);
+        $password = Yii::$app->security->generatePasswordHash($password);
+        $authKey = Yii::$app->security->generateRandomString(5);
 
         $user = new User();
 
-        $user->username    = $userName;
-        $user->email       = $email;
-        $user->password    = $password;
+        $user->username = $userName;
+        $user->email = $email;
+        $user->password = $password;
         $user->accessToken = $accessToken;
-        $user->authKey     = $authKey;
+        $user->authKey = $authKey;
 
         if ($user->save()) {
             return $user;
@@ -113,40 +128,6 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
 
         return false;
     }
-
-    public static function checkEmailUser($email, $userName)
-    {
-        $id = \Yii::$app->user->id;
-
-        if ($id > 0) {
-            $result = self::find()->where(['email' => $email])->andWhere(['!=', 'id', $id])->exists();
-            $result2 = self::find()->where(['username' => $userName])->andWhere(['!=', 'id', $id])->exists();
-        } else {
-
-            $result = self::find()->where(['email' => $email])->exists();
-            $result2 = self::find()->where(['username' => $userName])->exists();
-        }
-
-        if ($result || $result2) {
-            return true;
-        }
-        return false;
-    }
-
-    public static function editUser($email, $userName)
-    {
-        $id = \Yii::$app->user->id;
-
-        $user = User::findOne($id);
-        if (!$user) {
-            return false;
-        }
-
-        $user->email    = $email;
-        $user->username = $userName;
-        return $user->save();
-    }
-
 
     /**
      * {@inheritdoc}
@@ -181,6 +162,6 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
      */
     public function validatePassword($password)
     {
-        return \Yii::$app->security->validatePassword($password, $this->password);
+        return Yii::$app->security->validatePassword($password, $this->password);
     }
 }

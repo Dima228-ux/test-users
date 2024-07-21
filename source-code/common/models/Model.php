@@ -1,11 +1,15 @@
 <?php
 
 
-namespace app\models\Lib;
+namespace common\models;
 
 
 use yii\db\ActiveRecord;
 
+/**
+ * Class Model
+ * @package common\models
+ */
 class Model extends \yii\base\Model
 {
     public $isNewRecord = true;
@@ -19,7 +23,7 @@ class Model extends \yii\base\Model
     public function __construct(ActiveRecord $activeRecord = null)
     {
         if ($activeRecord) {
-            $this->_entity     = $activeRecord;
+            $this->_entity = $activeRecord;
             $this->isNewRecord = $this->_entity->isNewRecord;
         }
         parent::__construct();

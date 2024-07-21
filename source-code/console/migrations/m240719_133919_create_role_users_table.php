@@ -12,11 +12,14 @@ class m240719_133919_create_role_users_table extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('{{%role_users}}', [
-            'id' => $this->primaryKey(),
-            'user_id' => $this->integer()->notNull(),
-            'role_id' => $this->integer()->notNull(),
-        ]);
+        $this->createTable(
+            '{{%role_users}}',
+            [
+                'id' => $this->primaryKey(),
+                'user_id' => $this->integer()->notNull(),
+                'role_id' => $this->integer()->notNull(),
+            ]
+        );
     }
 
     /**
